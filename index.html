@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f1e7">
+  <title>紙箱棧板堆疊最佳化</title>
+  <script type="module" crossorigin src="./assets/index-h6KKUFqt.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BpmMahUa.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>紙箱棧板堆疊最佳化</h1>
+    <p class="sub">手機優先・直立逐層・最大箱數・Three.js 3D</p>
+  </header>
+
+  <main>
+    <section class="card" aria-label="輸入">
+      <h2>尺寸輸入（毫米）</h2>
+      <div class="grid">
+        <label>棧板長<input id="palletL" type="number" inputmode="numeric" step="1" value="1200"></label>
+        <label>棧板寬<input id="palletW" type="number" inputmode="numeric" step="1" value="1000"></label>
+        <label>棧板高<input id="palletH" type="number" inputmode="numeric" step="1" value="150"></label>
+        <label>紙箱長<input id="boxL" type="number" inputmode="numeric" step="1" value="400"></label>
+        <label>紙箱寬<input id="boxW" type="number" inputmode="numeric" step="1" value="500"></label>
+        <label>紙箱高<input id="boxH" type="number" inputmode="numeric" step="1" value="150"></label>
+        <label class="wide">包含棧板的最高總高度<input id="maxTotalH" type="number" inputmode="numeric" step="1" value="1000"></label>
+      </div>
+      <div class="pallet-preset-row">
+        <label class="mode-label">棧板尺寸快速選擇
+          <select id="palletPresetSelect">
+            <option value="1100x1100">1100 × 1100 mm</option>
+            <option value="1200x1000">1200 × 1000 mm</option>
+            <option value="custom">自訂</option>
+          </select>
+        </label>
+      </div>
+      <div class="mode-row">
+        <label class="mode-label">計算模式
+          <select id="modeSelect">
+            <option value="classic">通用最佳化（直向/橫向切割搜尋）</option>
+            <option value="templates">AB 模板（固定 4/5/6/7/8 箱五種排法）</option>
+          </select>
+        </label>
+      </div>
+      <button id="compute" class="primary" type="button">計算最佳排法</button>
+      <p class="hint">計算限制：單尺寸 ≤100,000 mm・每層 ≤5,000 箱・≤200 層・總箱數 ≤50,000；超過會直接提示而不開始搜尋。計算逾時會自動中止並可重試。</p>
+      <div id="errors" class="errors" hidden></div>
+      <div id="message" class="message" hidden></div>
+    </section>
+
+    <section class="card" id="candidateCard" hidden aria-label="AB 模板候選">
+      <h2>五種固定箱數模板候選</h2>
+      <p class="hint">模板為固定箱數排法（不任意變更箱數）；僅當同一棧板內 A 與 B 變體皆無越界且無重疊時才適用。最佳化指五種模板中箱數最多者，非全域最佳證明。</p>
+      <ul id="candidateList" class="candidate-list"></ul>
+      <label class="mode-label">選擇模板
+        <select id="candidateSelect"></select>
+      </label>
+    </section>
+
+    <section class="card" id="statsCard" hidden aria-label="統計">
+      <h2>計算結果</h2>
+      <div class="stats">
+        <div class="stat"><span class="k">每層箱數</span><span class="v" id="statPerLevel">—</span></div>
+        <div class="stat"><span class="k">層數</span><span class="v" id="statLevels">—</span></div>
+        <div class="stat"><span class="k">總箱數</span><span class="v" id="statTotal">—</span></div>
+        <div class="stat"><span class="k">含棧板總高度</span><span class="v" id="statHeight">—</span></div>
+        <div class="stat"><span class="k">平面利用率</span><span class="v" id="statUtil">—</span></div>
+        <div class="stat"><span class="k">最優證明</span><span class="v" id="statOpt">—</span></div>
+      </div>
+      <p id="solverNote" class="note" hidden></p>
+    </section>
+
+    <section class="card" id="viewerCard" hidden aria-label="3D 檢視">
+      <h2>3D 堆疊檢視</h2>
+      <div id="canvasWrap"><div id="canvas3d"></div><div id="renderNote" class="render-note" hidden></div></div>
+      <div id="viewerSummary" class="viewer-summary" aria-live="polite"></div>
+      <div class="controls">
+        <div class="row">
+          <button type="button" data-view="top">俯視</button>
+          <button type="button" data-view="front">正視</button>
+          <button type="button" data-view="iso" class="active">等角</button>
+        </div>
+        <div class="row">
+          <label class="layer-label">逐層顯示
+            <select id="layerSelect"><option value="all">全部層</option></select>
+          </label>
+        </div>
+        <div class="row">
+          <button type="button" id="exportPng">匯出 PNG</button>
+          <button type="button" id="exportJson">匯出 JSON</button>
+        </div>
+        <div class="legend">
+          <span><i class="sw rot0"></i>方向 A（箱長沿 X）</span>
+          <span><i class="sw rot1"></i>方向 B（水平旋轉 90°）</span>
+          <span><i class="sw pallet"></i>棧板</span>
+        </div>
+        <p class="hint">單指拖曳旋轉・雙指縮放</p>
+      </div>
+    </section>
+
+    <section class="card" id="containerHost" aria-label="貨櫃裝櫃計算">
+      <h2>貨櫃裝櫃計算</h2>
+      <p class="hint">流程：先算棧板 → 選模板 → 輸入貨櫃總箱數 → 計算裝櫃。貨櫃總箱數為獨立輸入，不會沿用上方棧板結果的總箱數；主尺寸或模式變更後須重新計算。</p>
+      <p class="hint container-links">櫃型預設值可自行修改（改後會顯示「已自訂」，可按「恢復所選櫃型預設值」）。規格來源（Hapag-Lloyd，可點擊查核）：
+        <a href="https://www.hapag-lloyd.com/en/services-information/cargo-fleet/container/20-standard.html" target="_blank" rel="noopener noreferrer">20' 標準櫃</a>・
+        <a href="https://www.hapag-lloyd.com/en/services-information/cargo-fleet/container/40-standard.html" target="_blank" rel="noopener noreferrer">40' 標準櫃</a>・
+        <a href="https://www.hapag-lloyd.com/en/services-information/cargo-fleet/container/40-standard-high-cube.html" target="_blank" rel="noopener noreferrer">40' Standard High Cube</a>
+      </p>
+    </section>
+    <section class="card" aria-label="貨櫃三維配置">
+      <h2>貨櫃 3D 配置</h2>
+      <div id="containerSceneHost"></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    直立逐層模型：每層同一布局、僅水平 90° 旋轉、不懸空、不越界、不重疊。非全域最優證明、不含抗壓計算。
+  </footer>
+
+</body>
+</html>
