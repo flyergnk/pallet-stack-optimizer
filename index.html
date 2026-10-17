@@ -4,17 +4,128 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f6f1e7">
-  <title>紙箱棧板堆疊最佳化</title>
-  <script type="module" crossorigin src="./assets/index-h6KKUFqt.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-BpmMahUa.css">
+  <title>包裝流程：瓶裝・袋裝・紙箱／棧板・貨櫃</title>
+  <script type="module" crossorigin src="./assets/index-MX5fELzi.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DUnxE1I4.css">
 </head>
 <body>
   <header class="topbar">
-    <h1>紙箱棧板堆疊最佳化</h1>
+    <h1>包裝流程：瓶裝・袋裝・紙箱／棧板・貨櫃</h1>
     <p class="sub">手機優先・直立逐層・最大箱數・Three.js 3D</p>
   </header>
 
+  <nav id="pageNav" class="page-nav" aria-label="包裝流程頁面">
+    <a id="nav-bottles" href="#bottles">瓶裝裝箱</a>
+    <a id="nav-pouches" href="#pouches">粉粒／袋裝</a>
+    <a id="nav-pallet" href="#pallet">紙箱／棧板</a>
+    <a id="nav-container" href="#container">貨櫃</a>
+  </nav>
+
   <main>
+    <div id="page-bottles" class="page-wrapper" hidden>
+      <section class="card bottle-ui" id="bottleHost" aria-label="瓶裝裝箱">
+        <h2>瓶裝裝箱（估算）</h2>
+        <p class="hint">直立規則排列估算紙箱尺寸（圓瓶以直徑外接正方形計算，不做交錯圓瓶搜尋）；結果經確認後帶入「紙箱／棧板」頁。本估算非製箱訂單，未含抗壓驗證。</p>
+        <label class="pack-field pack-field--select">瓶形
+          <select id="b-shape">
+            <option value="round">圓形（外接正方形）</option>
+            <option value="rectangular">矩形</option>
+          </select>
+        </label>
+        <div class="b-round-fields">
+          <div class="grid">
+            <label>瓶最大外徑（mm）<input id="b-diameter" type="number" inputmode="numeric" step="any" value="50"></label>
+          </div>
+        </div>
+        <div class="b-rect-fields">
+          <div class="grid">
+            <label>物品長＝最大外長（mm）<input id="b-itemL" type="number" inputmode="numeric" step="any"></label>
+            <label>物品寬＝最大外寬（mm）<input id="b-itemW" type="number" inputmode="numeric" step="any"></label>
+          </div>
+        </div>
+        <div class="grid">
+          <label>物品含蓋總高（mm）<input id="b-itemH" type="number" inputmode="numeric" step="any" value="100"></label>
+          <label>列數（個）<input id="b-cols" type="number" inputmode="numeric" step="1" value="5"></label>
+          <label>行數（個）<input id="b-rows" type="number" inputmode="numeric" step="1" value="4"></label>
+          <label>層數（層）<input id="b-layers" type="number" inputmode="numeric" step="1" value="1"></label>
+        </div>
+        <p class="hint">以下為可選紙箱參數（mm）；不可留空（空白不會預設為 0）。</p>
+        <div class="grid">
+          <label>長向間距（mm）<input id="b-gapL" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>寬向間距（mm）<input id="b-gapW" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>高向間距（mm）<input id="b-gapH" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>長向壁距（mm）<input id="b-wallClearanceL" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>寬向壁距（mm）<input id="b-wallClearanceW" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>上方淨高（mm）<input id="b-headroom" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>上墊（mm）<input id="b-topPad" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>下墊（mm）<input id="b-bottomPad" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>板材厚（mm）<input id="b-boardThickness" type="number" inputmode="numeric" step="any" value="4"></label>
+        </div>
+        <button id="b-calculate" class="primary" type="button">計算紙箱估算</button>
+        <div id="b-errors" class="errors" hidden></div>
+        <div id="b-result" class="pack-result" hidden></div>
+        <div id="b-diagram" class="pack-diagram" hidden></div>
+        <section id="b-scene" hidden aria-label="包裝 3D"></section>
+        <button id="b-transfer" class="primary" type="button" disabled>帶入紙箱／棧板…</button>
+        <div id="b-transfer-preview" class="pack-preview" hidden>
+          <div id="b-transfer-preview-body"></div>
+          <div class="pack-preview-actions">
+            <button id="b-confirm" class="primary" type="button">確認帶入</button>
+            <button id="b-cancel" type="button">取消</button>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div id="page-pouches" class="page-wrapper" hidden>
+      <section class="card pouch-ui" id="pouchHost" aria-label="粉粒／袋裝裝箱">
+        <h2>粉粒／袋裝裝箱（估算）</h2>
+        <p class="hint">由每袋重量與堆積密度推算袋體有效平面與成形尺寸（A4 折封經驗模型，封邊折向袋身內側、無側風琴，非製箱保證），加每邊追加與單袋厚度修正後列舉 cols×rows 排列候選；結果經確認後帶入「紙箱／棧板」頁。本估算非製箱訂單，未含抗壓驗證。</p>
+        <div class="grid">
+          <label>每袋重量（g）<input id="p-massG" type="number" inputmode="numeric" step="any" value="1000"></label>
+          <label>堆積密度（g/cm³）<input id="p-bulkDensity" type="number" inputmode="numeric" step="any" value="0.6"></label>
+          <label>填充率（%）<input id="p-fillPercent" type="number" inputmode="numeric" step="any" value="90"></label>
+          <label>每邊封邊（mm）<input id="p-sealMm" type="number" inputmode="numeric" step="any" value="10"></label>
+          <label>每堆件數（袋）<input id="p-unitsPerStack" type="number" inputmode="numeric" step="1" value="5"></label>
+          <label>堆數（堆）<input id="p-stackCount" type="number" inputmode="numeric" step="1" value="4"></label>
+        </div>
+        <p class="hint">袋身尺寸修正（mm）：每邊追加（長／寬，非負）與單袋厚度修正（非負，只加一次）。</p>
+        <div class="grid">
+          <label>長向每邊追加（mm）<input id="p-allowanceL" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>寬向每邊追加（mm）<input id="p-allowanceW" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>單袋厚度修正（mm）<input id="p-thicknessCorrection" type="number" inputmode="numeric" step="any" value="0"></label>
+        </div>
+        <p class="hint">以下為可選紙箱參數（mm）；不可留空（空白不會預設為 0）。</p>
+        <div class="grid">
+          <label>長向間距（mm）<input id="p-gapL" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>寬向間距（mm）<input id="p-gapW" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>高向間距（mm）<input id="p-gapH" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>長向壁距（mm）<input id="p-wallClearanceL" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>寬向壁距（mm）<input id="p-wallClearanceW" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>上方淨高（mm）<input id="p-headroom" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>上墊（mm）<input id="p-topPad" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>下墊（mm）<input id="p-bottomPad" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>板材厚（mm）<input id="p-boardThickness" type="number" inputmode="numeric" step="any" value="4"></label>
+        </div>
+        <button id="p-calculate" class="primary" type="button">計算袋裝排列候選</button>
+        <div id="p-errors" class="errors" hidden></div>
+        <div id="p-model-result" class="pack-result" hidden></div>
+        <label class="pack-field pack-field--select">排列候選（cols×rows×層；不排名，預設第一筆）
+          <select id="p-arrangement"></select>
+        </label>
+        <div id="p-result" class="pack-result" hidden></div>
+        <div id="p-diagram" class="pack-diagram" hidden></div>
+        <section id="p-scene" hidden aria-label="包裝 3D"></section>
+        <button id="p-transfer" class="primary" type="button" disabled>帶入紙箱／棧板…</button>
+        <div id="p-transfer-preview" class="pack-preview" hidden>
+          <div id="p-transfer-preview-body"></div>
+          <div class="pack-preview-actions">
+            <button id="p-confirm" class="primary" type="button">確認帶入</button>
+            <button id="p-cancel" type="button">取消</button>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div id="page-pallet" class="page-wrapper">
     <section class="card" aria-label="輸入">
       <h2>尺寸輸入（毫米）</h2>
       <div class="grid">
@@ -35,6 +146,7 @@
           </select>
         </label>
       </div>
+      <p id="packagingSource" class="packaging-source" role="status" aria-live="polite">紙箱尺寸來源：尚未帶入</p>
       <div class="mode-row">
         <label class="mode-label">計算模式
           <select id="modeSelect">
@@ -99,6 +211,9 @@
       </div>
     </section>
 
+    </div>
+
+    <div id="page-container" class="page-wrapper" hidden>
     <section class="card" id="containerHost" aria-label="貨櫃裝櫃計算">
       <h2>貨櫃裝櫃計算</h2>
       <p class="hint">流程：先算棧板 → 選模板 → 輸入貨櫃總箱數 → 計算裝櫃。貨櫃總箱數為獨立輸入，不會沿用上方棧板結果的總箱數；主尺寸或模式變更後須重新計算。</p>
@@ -112,6 +227,7 @@
       <h2>貨櫃 3D 配置</h2>
       <div id="containerSceneHost"></div>
     </section>
+    </div>
   </main>
 
   <footer class="foot">
