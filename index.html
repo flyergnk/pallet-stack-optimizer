@@ -5,69 +5,68 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f6f1e7">
   <link rel="icon" href="data:,">
-  <title>包裝流程：瓶裝・袋裝・紙箱／棧板・貨櫃</title>
-  <script type="module" crossorigin src="./assets/index-MX5fELzi.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-DUnxE1I4.css">
+  <title>自動化包材、包裝流程計算</title>
+  <script type="module" crossorigin src="./assets/index-DC24VlJ_.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-C7MGV43i.css">
 </head>
 <body>
   <header class="topbar">
-    <h1>包裝流程：瓶裝・袋裝・紙箱／棧板・貨櫃</h1>
+    <h1>自動化包材、包裝流程計算</h1>
     <p class="sub">手機優先・直立逐層・最大箱數・Three.js 3D</p>
   </header>
 
   <nav id="pageNav" class="page-nav" aria-label="包裝流程頁面">
-    <a id="nav-bottles" href="#bottles">瓶裝裝箱</a>
-    <a id="nav-pouches" href="#pouches">粉粒／袋裝</a>
-    <a id="nav-pallet" href="#pallet">紙箱／棧板</a>
-    <a id="nav-container" href="#container">貨櫃</a>
+    <a id="nav-bottles" href="#bottles">瓶裝紙箱估算</a>
+    <a id="nav-pouches" href="#pouches">袋狀紙箱估算</a>
+    <a id="nav-pallet" href="#pallet">紙箱優化堆疊</a>
+    <a id="nav-container" href="#container">裝櫃優化估算</a>
   </nav>
 
   <main>
     <div id="page-bottles" class="page-wrapper" hidden>
       <section class="card bottle-ui" id="bottleHost" aria-label="瓶裝裝箱">
         <h2>瓶裝裝箱（估算）</h2>
-        <p class="hint">直立規則排列估算紙箱尺寸（圓瓶以直徑外接正方形計算，不做交錯圓瓶搜尋）；結果經確認後帶入「紙箱／棧板」頁。本估算非製箱訂單，未含抗壓驗證。</p>
+        <p class="hint">直立規則排列估算紙箱尺寸（圓瓶以直徑外接正方形計算，不做交錯圓瓶搜尋）；結果經確認後帶入「紙箱優化堆疊」頁。本估算非製箱訂單，未含抗壓驗證。</p>
         <label class="pack-field pack-field--select">瓶形
           <select id="b-shape">
-            <option value="round">圓形（外接正方形）</option>
-            <option value="rectangular">矩形</option>
+            <option value="round">圓瓶</option>
+            <option value="rectangular">方瓶</option>
           </select>
         </label>
         <div class="b-round-fields">
           <div class="grid">
-            <label>瓶最大外徑（mm）<input id="b-diameter" type="number" inputmode="numeric" step="any" value="50"></label>
+            <label>圓瓶最大外徑（mm）<input id="b-diameter" type="number" inputmode="numeric" step="any" value="50"></label>
           </div>
         </div>
         <div class="b-rect-fields">
           <div class="grid">
-            <label>物品長＝最大外長（mm）<input id="b-itemL" type="number" inputmode="numeric" step="any"></label>
-            <label>物品寬＝最大外寬（mm）<input id="b-itemW" type="number" inputmode="numeric" step="any"></label>
+            <label>方瓶長（mm）<input id="b-itemL" type="number" inputmode="numeric" step="any"></label>
+            <label>方瓶寬（mm）<input id="b-itemW" type="number" inputmode="numeric" step="any"></label>
           </div>
         </div>
         <div class="grid">
-          <label>物品含蓋總高（mm）<input id="b-itemH" type="number" inputmode="numeric" step="any" value="100"></label>
+          <label>瓶子含蓋總高（mm）<input id="b-itemH" type="number" inputmode="numeric" step="any" value="100"></label>
           <label>列數（個）<input id="b-cols" type="number" inputmode="numeric" step="1" value="5"></label>
           <label>行數（個）<input id="b-rows" type="number" inputmode="numeric" step="1" value="4"></label>
           <label>層數（層）<input id="b-layers" type="number" inputmode="numeric" step="1" value="1"></label>
         </div>
         <p class="hint">以下為可選紙箱參數（mm）；不可留空（空白不會預設為 0）。</p>
         <div class="grid">
-          <label>長向間距（mm）<input id="b-gapL" type="number" inputmode="numeric" step="any" value="0"></label>
-          <label>寬向間距（mm）<input id="b-gapW" type="number" inputmode="numeric" step="any" value="0"></label>
-          <label>高向間距（mm）<input id="b-gapH" type="number" inputmode="numeric" step="any" value="0"></label>
-          <label>長向壁距（mm）<input id="b-wallClearanceL" type="number" inputmode="numeric" step="any" value="0"></label>
-          <label>寬向壁距（mm）<input id="b-wallClearanceW" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>井字隔板厚度（mm）<input id="b-dividerThickness" type="number" inputmode="numeric" step="any" value="1" aria-describedby="b-divider-hint"><span id="b-divider-hint" class="hint">無井字隔板時預設為 1 mm</span></label>
+          <label>高向間距（mm）<input id="b-gapH" type="number" inputmode="numeric" step="any" value="1"></label>
+          <label>長向壁距（mm）<input id="b-wallClearanceL" type="number" inputmode="numeric" step="any" value="1"></label>
+          <label>寬向壁距（mm）<input id="b-wallClearanceW" type="number" inputmode="numeric" step="any" value="1"></label>
           <label>上方淨高（mm）<input id="b-headroom" type="number" inputmode="numeric" step="any" value="0"></label>
-          <label>上墊（mm）<input id="b-topPad" type="number" inputmode="numeric" step="any" value="0"></label>
-          <label>下墊（mm）<input id="b-bottomPad" type="number" inputmode="numeric" step="any" value="0"></label>
-          <label>板材厚（mm）<input id="b-boardThickness" type="number" inputmode="numeric" step="any" value="4"></label>
+          <label>天板厚度（mm）<input id="b-topPad" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>地板厚度（mm）<input id="b-bottomPad" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>紙箱厚度（mm）<input id="b-boardThickness" type="number" inputmode="numeric" step="any" value="4"></label>
         </div>
-        <button id="b-calculate" class="primary" type="button">計算紙箱估算</button>
+        <button id="b-calculate" class="primary" type="button">紙箱估算</button>
         <div id="b-errors" class="errors" hidden></div>
         <div id="b-result" class="pack-result" hidden></div>
         <div id="b-diagram" class="pack-diagram" hidden></div>
         <section id="b-scene" hidden aria-label="包裝 3D"></section>
-        <button id="b-transfer" class="primary" type="button" disabled>帶入紙箱／棧板…</button>
+        <button id="b-transfer" class="primary" type="button" disabled>轉往「紙箱優化堆疊」</button>
         <div id="b-transfer-preview" class="pack-preview" hidden>
           <div id="b-transfer-preview-body"></div>
           <div class="pack-preview-actions">
@@ -80,14 +79,16 @@
     <div id="page-pouches" class="page-wrapper" hidden>
       <section class="card pouch-ui" id="pouchHost" aria-label="粉粒／袋裝裝箱">
         <h2>粉粒／袋裝裝箱（估算）</h2>
-        <p class="hint">由每袋重量與堆積密度推算袋體有效平面與成形尺寸（A4 折封經驗模型，封邊折向袋身內側、無側風琴，非製箱保證），加每邊追加與單袋厚度修正後列舉 cols×rows 排列候選；結果經確認後帶入「紙箱／棧板」頁。本估算非製箱訂單，未含抗壓驗證。</p>
+        <p class="hint">流程：① 鋁袋尺寸估算 → ② 紙箱估算與排列候選 → ③ 確認帶入「紙箱優化堆疊」頁。本估算非製箱訂單，未含抗壓驗證。</p>
+        <h3>鋁袋尺寸估算</h3>
+        <p class="hint">由每袋重量、堆積密度與填充率推算袋體有效平面與成形尺寸（A4 折封經驗模型，封邊折向袋身內側、無側風琴，非製箱保證）。</p>
         <div class="grid">
           <label>每袋重量（g）<input id="p-massG" type="number" inputmode="numeric" step="any" value="1000"></label>
           <label>堆積密度（g/cm³）<input id="p-bulkDensity" type="number" inputmode="numeric" step="any" value="0.6"></label>
           <label>填充率（%）<input id="p-fillPercent" type="number" inputmode="numeric" step="any" value="90"></label>
           <label>每邊封邊（mm）<input id="p-sealMm" type="number" inputmode="numeric" step="any" value="10"></label>
           <label>每堆件數（袋）<input id="p-unitsPerStack" type="number" inputmode="numeric" step="1" value="5"></label>
-          <label>堆數（堆）<input id="p-stackCount" type="number" inputmode="numeric" step="1" value="4"></label>
+          <label>堆數（堆）<select id="p-stackCount"><option value="2">2 堆（1×2）</option><option value="4" selected>4 堆（2×2）</option></select></label>
         </div>
         <p class="hint">袋身尺寸修正（mm）：每邊追加（長／寬，非負）與單袋厚度修正（非負，只加一次）。</p>
         <div class="grid">
@@ -95,17 +96,16 @@
           <label>寬向每邊追加（mm）<input id="p-allowanceW" type="number" inputmode="numeric" step="any" value="0"></label>
           <label>單袋厚度修正（mm）<input id="p-thicknessCorrection" type="number" inputmode="numeric" step="any" value="0"></label>
         </div>
-        <p class="hint">以下為可選紙箱參數（mm）；不可留空（空白不會預設為 0）。</p>
+        <h3>紙箱估算</h3>
+        <p class="hint">以下為可選紙箱參數（mm）；不可留空（空白不會預設為 0）。十字隔板厚度同時套用於長向與寬向；層與層之間不預留間隙（高向間距固定 0 mm），上方空間請用「上方淨高」調整。</p>
         <div class="grid">
-          <label>長向間距（mm）<input id="p-gapL" type="number" inputmode="numeric" step="any" value="0"></label>
-          <label>寬向間距（mm）<input id="p-gapW" type="number" inputmode="numeric" step="any" value="0"></label>
-          <label>高向間距（mm）<input id="p-gapH" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>十字隔板厚度（mm）<input id="p-dividerThickness" type="number" inputmode="numeric" step="any" min="0" value="1" aria-describedby="p-divider-hint"><span id="p-divider-hint" class="hint">無十字隔板時預設 1 mm</span></label>
           <label>長向壁距（mm）<input id="p-wallClearanceL" type="number" inputmode="numeric" step="any" value="0"></label>
           <label>寬向壁距（mm）<input id="p-wallClearanceW" type="number" inputmode="numeric" step="any" value="0"></label>
           <label>上方淨高（mm）<input id="p-headroom" type="number" inputmode="numeric" step="any" value="0"></label>
-          <label>上墊（mm）<input id="p-topPad" type="number" inputmode="numeric" step="any" value="0"></label>
-          <label>下墊（mm）<input id="p-bottomPad" type="number" inputmode="numeric" step="any" value="0"></label>
-          <label>板材厚（mm）<input id="p-boardThickness" type="number" inputmode="numeric" step="any" value="4"></label>
+          <label>天板厚度（mm）<input id="p-topPad" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>地板厚度（mm）<input id="p-bottomPad" type="number" inputmode="numeric" step="any" value="0"></label>
+          <label>紙箱厚度（mm）<input id="p-boardThickness" type="number" inputmode="numeric" step="any" value="4"></label>
         </div>
         <button id="p-calculate" class="primary" type="button">計算袋裝排列候選</button>
         <div id="p-errors" class="errors" hidden></div>
@@ -116,7 +116,7 @@
         <div id="p-result" class="pack-result" hidden></div>
         <div id="p-diagram" class="pack-diagram" hidden></div>
         <section id="p-scene" hidden aria-label="包裝 3D"></section>
-        <button id="p-transfer" class="primary" type="button" disabled>帶入紙箱／棧板…</button>
+        <button id="p-transfer" class="primary" type="button" disabled>轉往「紙箱優化堆疊」</button>
         <div id="p-transfer-preview" class="pack-preview" hidden>
           <div id="p-transfer-preview-body"></div>
           <div class="pack-preview-actions">
