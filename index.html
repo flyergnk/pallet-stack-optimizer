@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f6f1e7">
   <link rel="icon" href="data:,">
   <title>自動化包材、包裝流程計算</title>
-  <script type="module" crossorigin src="./assets/index-DkKjNTzS.js"></script>
+  <script type="module" crossorigin src="./assets/index-DPxm1SbI.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-BBImQyJZ.css">
 </head>
 <body>
@@ -81,11 +81,12 @@
         <h2>粉粒／袋裝裝箱（估算）</h2>
         <p class="hint">流程：① 鋁袋尺寸估算 → ② 紙箱估算與排列候選 → ③ 確認帶入「紙箱優化堆疊」頁。本估算非製箱訂單，未含抗壓驗證。</p>
         <h3>鋁袋尺寸估算</h3>
-        <p class="hint">由每袋重量、堆積密度與填充率推算袋體有效平面與成形尺寸（A4 折封經驗模型，封邊折向袋身內側、無側風琴，非製箱保證）。</p>
+        <p class="hint">由每袋重量、粉/粒假密度與充填滿度推算袋體有效平面與成形外包絡（A4 折封經驗模型，封邊折向袋身內側、無側風琴，非製箱保證）。</p>
+        <p class="hint" id="p-formed-shrink-note">成形長、寬預設各縮減 5%（有效平面尺寸 × 0.95）；成形厚度 = 有效平面寬 × 0.2 × 充填滿度。容量反推基準（內部）維持 (P−0.2W)×0.8W×0.16W，成形外包絡不得當成實際容積。</p>
         <div class="grid">
           <label>每袋重量（g）<input id="p-massG" type="number" inputmode="numeric" step="any" value="1000"></label>
-          <label>堆積密度（g/cm³）<input id="p-bulkDensity" type="number" inputmode="numeric" step="any" value="0.6"></label>
-          <label>填充率（%）<input id="p-fillPercent" type="number" inputmode="numeric" step="any" value="90"></label>
+          <label>粉/粒假密度（g/cm³）<input id="p-bulkDensity" type="number" inputmode="numeric" step="any" value="0.6"></label>
+          <label>充填滿度（%）<input id="p-fillPercent" type="number" inputmode="numeric" step="any" value="90"></label>
           <label>每邊封邊（mm）<input id="p-sealMm" type="number" inputmode="numeric" step="any" value="10"></label>
           <label>每堆件數（袋）<input id="p-unitsPerStack" type="number" inputmode="numeric" step="1" value="5"></label>
           <label>堆數（堆）<select id="p-stackCount"><option value="2">2 堆（1×2）</option><option value="4" selected>4 堆（2×2）</option></select></label>
