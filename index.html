@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f6f1e7">
   <link rel="icon" href="data:,">
-  <title>自動化包材、包裝流程計算</title>
-  <script type="module" crossorigin src="./assets/index-DPxm1SbI.js"></script>
+  <title>自動化包裝尺寸計算</title>
+  <script type="module" crossorigin src="./assets/index-DYxNfyQn.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-BBImQyJZ.css">
 </head>
 <body>
   <header class="topbar">
-    <h1>自動化包材、包裝流程計算</h1>
-    <p class="sub">手機優先・直立逐層・最大箱數・Three.js 3D</p>
+    <h1>自動化包裝尺寸計算</h1>
+    <p class="sub">包材估算、優化堆疊、優化裝櫃</p>
   </header>
 
   <nav id="pageNav" class="page-nav" aria-label="包裝流程頁面">
@@ -81,11 +81,26 @@
         <h2>粉粒／袋裝裝箱（估算）</h2>
         <p class="hint">流程：① 鋁袋尺寸估算 → ② 紙箱估算與排列候選 → ③ 確認帶入「紙箱優化堆疊」頁。本估算非製箱訂單，未含抗壓驗證。</p>
         <h3>鋁袋尺寸估算</h3>
-        <p class="hint">由每袋重量、粉/粒假密度與充填滿度推算袋體有效平面與成形外包絡（A4 折封經驗模型，封邊折向袋身內側、無側風琴，非製箱保證）。</p>
-        <p class="hint" id="p-formed-shrink-note">成形長、寬預設各縮減 5%（有效平面尺寸 × 0.95）；成形厚度 = 有效平面寬 × 0.2 × 充填滿度。容量反推基準（內部）維持 (P−0.2W)×0.8W×0.16W，成形外包絡不得當成實際容積。</p>
         <div class="grid">
+          <label>估算模式
+            <select id="p-estMode">
+              <option value="auto" selected>自動估算（重量＋假密度反推）</option>
+              <option value="manual">手動估算（含封邊平面外尺寸）</option>
+            </select>
+          </label>
+        </div>
+        <p class="hint" id="p-est-auto-note">由每袋重量、粉/粒假密度與充填滿度推算袋體有效平面與成形外包絡（A4 折封經驗模型，封邊折向袋身內側、無側風琴，非製箱保證）。</p>
+        <p class="hint" id="p-est-manual-note" hidden>手動輸入未充填攤平、含封邊的平面外長／外寬：四面封邊均同寬，有效平面＝外長／外寬各扣兩邊封邊（outerL−2×seal、outerW−2×seal）；不套 A4 比例、不依密度反推，物料體積／容量反推不適用。成形長、寬預設各縮減 5%（有效平面尺寸 × 0.95）；成形厚度 = 有效平面寬 × 0.2 × 充填滿度。</p>
+        <p class="hint" id="p-formed-shrink-note">成形長、寬預設各縮減 5%（有效平面尺寸 × 0.95）；成形厚度 = 有效平面寬 × 0.2 × 充填滿度。容量反推基準（內部）維持 (P−0.2W)×0.8W×0.16W，成形外包絡不得當成實際容積。</p>
+        <div class="grid" id="p-auto-fields">
           <label>每袋重量（g）<input id="p-massG" type="number" inputmode="numeric" step="any" value="1000"></label>
           <label>粉/粒假密度（g/cm³）<input id="p-bulkDensity" type="number" inputmode="numeric" step="any" value="0.6"></label>
+        </div>
+        <div class="grid" id="p-manual-fields" hidden>
+          <label>含封邊平面外長（mm）<input id="p-outerL" type="number" inputmode="numeric" step="any" value="300"></label>
+          <label>含封邊平面外寬（mm）<input id="p-outerW" type="number" inputmode="numeric" step="any" value="200"></label>
+        </div>
+        <div class="grid">
           <label>充填滿度（%）<input id="p-fillPercent" type="number" inputmode="numeric" step="any" value="90"></label>
           <label>每邊封邊（mm）<input id="p-sealMm" type="number" inputmode="numeric" step="any" value="10"></label>
           <label>每堆件數（袋）<input id="p-unitsPerStack" type="number" inputmode="numeric" step="1" value="5"></label>
