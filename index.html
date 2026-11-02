@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f6f1e7">
   <link rel="icon" href="data:,">
-  <title>自動化包裝尺寸計算</title>
-  <script type="module" crossorigin src="./assets/index-DYxNfyQn.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-BBImQyJZ.css">
+  <title>紙箱貨物堆疊模擬器</title>
+  <script type="module" crossorigin src="./assets/index-DD2HQccE.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BpUcuNyh.css">
 </head>
 <body>
   <header class="topbar">
-    <h1>自動化包裝尺寸計算</h1>
+    <h1>紙箱貨物堆疊模擬器</h1>
     <p class="sub">包材估算、優化堆疊、優化裝櫃</p>
   </header>
 
@@ -19,7 +19,7 @@
     <a id="nav-bottles" href="#bottles">瓶裝紙箱估算</a>
     <a id="nav-pouches" href="#pouches">袋狀紙箱估算</a>
     <a id="nav-pallet" href="#pallet">紙箱優化堆疊</a>
-    <a id="nav-container" href="#container">裝櫃優化估算</a>
+    <a id="nav-container" href="#container">裝櫃模擬</a>
   </nav>
 
   <main>
@@ -54,12 +54,16 @@
         <div class="grid">
           <label>井字隔板厚度（mm）<input id="b-dividerThickness" type="number" inputmode="numeric" step="any" value="1" aria-describedby="b-divider-hint"><span id="b-divider-hint" class="hint">無井字隔板時預設為 1 mm</span></label>
           <label>高向間距（mm）<input id="b-gapH" type="number" inputmode="numeric" step="any" value="1"></label>
-          <label>長向壁距（mm）<input id="b-wallClearanceL" type="number" inputmode="numeric" step="any" value="1"></label>
-          <label>寬向壁距（mm）<input id="b-wallClearanceW" type="number" inputmode="numeric" step="any" value="1"></label>
-          <label>上方淨高（mm）<input id="b-headroom" type="number" inputmode="numeric" step="any" value="0"></label>
           <label>天板厚度（mm）<input id="b-topPad" type="number" inputmode="numeric" step="any" value="0"></label>
           <label>地板厚度（mm）<input id="b-bottomPad" type="number" inputmode="numeric" step="any" value="0"></label>
           <label>紙箱厚度（mm）<input id="b-boardThickness" type="number" inputmode="numeric" step="any" value="4"></label>
+        </div>
+        <hr id="b-optional-separator" class="b-optional-separator">
+        <p class="hint" id="b-optional-hint">以下三項為非必需的額外預留尺寸；不使用時請填 0，欄位不可留空。</p>
+        <div class="grid" id="b-optional-fields" aria-describedby="b-optional-hint">
+          <label>長向壁距（mm）(非必需)<input id="b-wallClearanceL" type="number" inputmode="numeric" step="any" value="1"></label>
+          <label>寬向壁距（mm）(非必需)<input id="b-wallClearanceW" type="number" inputmode="numeric" step="any" value="1"></label>
+          <label>上方淨高（mm）(非必需)<input id="b-headroom" type="number" inputmode="numeric" step="any" value="0"></label>
         </div>
         <button id="b-calculate" class="primary" type="button">紙箱估算</button>
         <div id="b-errors" class="errors" hidden></div>
@@ -116,13 +120,15 @@
         <p class="hint">以下為可選紙箱參數（mm）；不可留空（空白不會預設為 0）。十字隔板厚度同時套用於長向與寬向；層與層之間不預留間隙（高向間距固定 0 mm），上方空間請用「上方淨高」調整。</p>
         <div class="grid">
           <label>十字隔板厚度（mm）<input id="p-dividerThickness" type="number" inputmode="numeric" step="any" min="0" value="1" aria-describedby="p-divider-hint"><span id="p-divider-hint" class="hint">無十字隔板時預設 1 mm</span></label>
-          <label>長向壁距（mm）<input id="p-wallClearanceL" type="number" inputmode="numeric" step="any" value="0"></label>
-          <label>寬向壁距（mm）<input id="p-wallClearanceW" type="number" inputmode="numeric" step="any" value="0"></label>
-          <label>上方淨高（mm）<input id="p-headroom" type="number" inputmode="numeric" step="any" value="0"></label>
           <label>天板厚度（mm）<input id="p-topPad" type="number" inputmode="numeric" step="any" value="0"></label>
           <label>地板厚度（mm）<input id="p-bottomPad" type="number" inputmode="numeric" step="any" value="0"></label>
           <label>紙箱厚度（mm）<input id="p-boardThickness" type="number" inputmode="numeric" step="any" value="4"></label>
+          <label>上方淨高（mm）<input id="p-headroom" type="number" inputmode="numeric" step="any" value="0" aria-describedby="p-headroom-note"></label>
         </div>
+        <p id="p-headroom-note" class="p-headroom-note">
+          <span class="p-headroom-note__title">估算容錯提醒</span>
+          <span class="p-headroom-note__body">上方淨高可增加粉體假密度估算錯誤容錯率</span>
+        </p>
         <button id="p-calculate" class="primary" type="button">計算袋裝排列候選</button>
         <div id="p-errors" class="errors" hidden></div>
         <div id="p-model-result" class="pack-result" hidden></div>
@@ -198,6 +204,8 @@
         <div class="stat"><span class="k">最優證明</span><span class="v" id="statOpt">—</span></div>
       </div>
       <p id="solverNote" class="note" hidden></p>
+      <button id="palletToContainer" class="primary" type="button" hidden disabled>轉往「裝櫃模擬」</button>
+      <p class="hint">轉往裝櫃模擬會沿用目前棧板排法；貨櫃總箱數需另行輸入，已填寫的櫃型與數值會保留。</p>
     </section>
 
     <section class="card" id="viewerCard" hidden aria-label="3D 檢視">
@@ -231,9 +239,9 @@
     </div>
 
     <div id="page-container" class="page-wrapper" hidden>
-    <section class="card" id="containerHost" aria-label="貨櫃裝櫃計算">
-      <h2>貨櫃裝櫃計算</h2>
-      <p class="hint">流程：先算棧板 → 選模板 → 輸入貨櫃總箱數 → 計算裝櫃。貨櫃總箱數為獨立輸入，不會沿用上方棧板結果的總箱數；主尺寸或模式變更後須重新計算。</p>
+    <section class="card" id="containerHost" aria-label="裝櫃模擬">
+      <h2>裝櫃模擬</h2>
+      <p class="hint">流程：先算棧板 → 按「轉往『裝櫃模擬』」→ 輸入貨櫃總箱數 → 計算裝櫃。貨櫃總箱數為獨立輸入，不會沿用上方棧板結果的總箱數；主尺寸或模式變更後須重新計算。</p>
       <p class="hint container-links">櫃型預設值可自行修改（改後會顯示「已自訂」，可按「恢復所選櫃型預設值」）。規格來源（Hapag-Lloyd，可點擊查核）：
         <a href="https://www.hapag-lloyd.com/en/services-information/cargo-fleet/container/20-standard.html" target="_blank" rel="noopener noreferrer">20' 標準櫃</a>・
         <a href="https://www.hapag-lloyd.com/en/services-information/cargo-fleet/container/40-standard.html" target="_blank" rel="noopener noreferrer">40' 標準櫃</a>・
