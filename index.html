@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#f6f1e7">
   <link rel="icon" href="data:,">
   <title>紙箱貨物堆疊模擬器</title>
-  <script type="module" crossorigin src="./assets/index-DNPQCMdD.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-B-gqmd5B.css">
+  <script type="module" crossorigin src="./assets/index-Cj29ug1u.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-CeRwQkXa.css">
 </head>
 <body>
   <header class="topbar">
@@ -318,31 +318,24 @@
       </ul>
     </section>
 
-    <section class="card" id="viewerCard" hidden aria-label="3D 檢視">
-      <h2>3D 堆疊檢視</h2>
-      <div id="canvasWrap"><div id="canvas3d"></div><div id="renderNote" class="render-note" hidden></div></div>
+    <section class="card viewer-panel" id="viewerCard" hidden aria-label="3D 檢視">
+      <h2 class="viewer-title">3D 堆疊檢視</h2>
+      <div class="viewer-display-options">
+        <label class="layer-label viewer-filter">顯示層
+          <select id="layerSelect"><option value="all">全部層</option></select>
+        </label>
+      </div>
+      <div id="palletViewerToolbar"></div>
+      <div id="canvasWrap" class="viewer-frame"><div id="canvas3d"></div><div id="renderNote" class="render-note" hidden></div></div>
+      <p class="viewer-gesture">拖曳旋轉・雙指或滾輪縮放</p>
       <div id="viewerSummary" class="viewer-summary" aria-live="polite"></div>
       <div class="controls">
-        <div class="row">
-          <button type="button" data-view="top">俯視</button>
-          <button type="button" data-view="front">正視</button>
-          <button type="button" data-view="iso" class="active">等角</button>
-        </div>
-        <div class="row">
-          <label class="layer-label">逐層顯示
-            <select id="layerSelect"><option value="all">全部層</option></select>
-          </label>
-        </div>
-        <div class="row">
-          <button type="button" id="exportPng">匯出 PNG</button>
-          <button type="button" id="exportJson">匯出 JSON</button>
-        </div>
+        <div class="viewer-data-export"><button type="button" id="exportJson">匯出 JSON</button></div>
         <div class="legend">
           <span><i class="sw rot0"></i>方向 A（箱長沿 X）</span>
           <span><i class="sw rot1"></i>方向 B（水平旋轉 90°）</span>
           <span><i class="sw pallet"></i>棧板</span>
         </div>
-        <p class="hint">單指拖曳旋轉・雙指縮放</p>
       </div>
     </section>
 
@@ -394,7 +387,7 @@
         </details>
     </section>
     <section class="card" aria-label="貨櫃三維配置">
-      <h2>貨櫃 3D 配置</h2>
+      <h2 class="viewer-title">3D 裝櫃檢視</h2>
       <div id="containerSceneHost"></div>
     </section>
     </div>
