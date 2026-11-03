@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#f6f1e7">
   <link rel="icon" href="data:,">
   <title>紙箱貨物堆疊模擬器</title>
-  <script type="module" crossorigin src="./assets/index-DD2HQccE.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-BpUcuNyh.css">
+  <script type="module" crossorigin src="./assets/index-DNPQCMdD.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-B-gqmd5B.css">
 </head>
 <body>
   <header class="topbar">
@@ -26,7 +26,11 @@
     <div id="page-bottles" class="page-wrapper" hidden>
       <section class="card bottle-ui" id="bottleHost" aria-label="瓶裝裝箱">
         <h2>瓶裝裝箱（估算）</h2>
-        <p class="hint">直立規則排列估算紙箱尺寸（圓瓶以直徑外接正方形計算，不做交錯圓瓶搜尋）；結果經確認後帶入「紙箱優化堆疊」頁。本估算非製箱訂單，未含抗壓驗證。</p>
+        <ul class="explanation-list introduction-list">
+          <li>採直立規則排列；圓瓶以直徑的外接正方形計算，不做交錯圓瓶搜尋。</li>
+          <li>結果經確認後才帶入「紙箱優化堆疊」，不會自動覆寫下游。</li>
+          <li>本估算非製箱訂單，未含抗壓驗證。</li>
+        </ul>
         <label class="pack-field pack-field--select">瓶形
           <select id="b-shape">
             <option value="round">圓瓶</option>
@@ -50,7 +54,22 @@
           <label>行數（個）<input id="b-rows" type="number" inputmode="numeric" step="1" value="4"></label>
           <label>層數（層）<input id="b-layers" type="number" inputmode="numeric" step="1" value="1"></label>
         </div>
-        <p class="hint">以下為可選紙箱參數（mm）；不可留空（空白不會預設為 0）。</p>
+        <p class="hint">紙箱參數以 mm 計；不使用的預留尺寸請填 0，欄位不可留空。</p>
+        <details id="b-carton-disclosure" class="explanation-disclosure">
+          <summary>查看紙箱估算公式</summary>
+          <section id="b-carton-explanation" class="explanation">
+          <h3 class="explanation-title">紙箱估算方式</h3>
+          <ul class="explanation-list">
+            <li><strong>占用長</strong><span class="formula-line">占用長 ＝ 單瓶長 × 列數 ＋（列數 − 1）× 井字隔板厚度</span></li>
+            <li><strong>占用寬</strong><span class="formula-line">占用寬 ＝ 單瓶寬 × 行數 ＋（行數 − 1）× 井字隔板厚度</span></li>
+            <li><strong>占用高</strong><span class="formula-line">占用高 ＝ 瓶子含蓋總高 × 層數 ＋（層數 − 1）× 高向間距</span></li>
+            <li><strong>紙箱內長／內寬</strong><span class="formula-line">內長 ＝ 占用長 ＋ 2 × 長向壁距</span><span class="formula-line">內寬 ＝ 占用寬 ＋ 2 × 寬向壁距</span></li>
+            <li><strong>紙箱內高</strong><span class="formula-line">內高 ＝ 占用高 ＋ 天板厚度 ＋ 地板厚度 ＋ 上方淨高</span></li>
+            <li><strong>紙箱外尺寸（各軸）</strong><span class="formula-line">外尺寸 ＝ 對應內尺寸 ＋ 2 × 紙箱厚度</span></li>
+            <li><strong>輸入與帶入：</strong>尺寸單位為 mm；欄位不可留空（空白不會預設為 0）。確認帶入時，外尺寸各軸向上取整為整數 mm。</li>
+          </ul>
+        </section>
+        </details>
         <div class="grid">
           <label>井字隔板厚度（mm）<input id="b-dividerThickness" type="number" inputmode="numeric" step="any" value="1" aria-describedby="b-divider-hint"><span id="b-divider-hint" class="hint">無井字隔板時預設為 1 mm</span></label>
           <label>高向間距（mm）<input id="b-gapH" type="number" inputmode="numeric" step="any" value="1"></label>
@@ -83,7 +102,12 @@
     <div id="page-pouches" class="page-wrapper" hidden>
       <section class="card pouch-ui" id="pouchHost" aria-label="粉粒／袋裝裝箱">
         <h2>粉粒／袋裝裝箱（估算）</h2>
-        <p class="hint">流程：① 鋁袋尺寸估算 → ② 紙箱估算與排列候選 → ③ 確認帶入「紙箱優化堆疊」頁。本估算非製箱訂單，未含抗壓驗證。</p>
+        <ol class="explanation-list flow-list">
+          <li>估算鋁袋尺寸。</li>
+          <li>估算紙箱並選擇排列候選。</li>
+          <li>確認後帶入「紙箱優化堆疊」。</li>
+        </ol>
+        <p class="hint">本估算非製箱訂單，未含抗壓驗證。</p>
         <h3>鋁袋尺寸估算</h3>
         <div class="grid">
           <label>估算模式
@@ -93,9 +117,42 @@
             </select>
           </label>
         </div>
-        <p class="hint" id="p-est-auto-note">由每袋重量、粉/粒假密度與充填滿度推算袋體有效平面與成形外包絡（A4 折封經驗模型，封邊折向袋身內側、無側風琴，非製箱保證）。</p>
-        <p class="hint" id="p-est-manual-note" hidden>手動輸入未充填攤平、含封邊的平面外長／外寬：四面封邊均同寬，有效平面＝外長／外寬各扣兩邊封邊（outerL−2×seal、outerW−2×seal）；不套 A4 比例、不依密度反推，物料體積／容量反推不適用。成形長、寬預設各縮減 5%（有效平面尺寸 × 0.95）；成形厚度 = 有效平面寬 × 0.2 × 充填滿度。</p>
-        <p class="hint" id="p-formed-shrink-note">成形長、寬預設各縮減 5%（有效平面尺寸 × 0.95）；成形厚度 = 有效平面寬 × 0.2 × 充填滿度。容量反推基準（內部）維持 (P−0.2W)×0.8W×0.16W，成形外包絡不得當成實際容積。</p>
+        <details id="p-estimation-explanation" class="explanation-disclosure">
+          <summary>查看鋁袋估算公式</summary>
+        <section id="p-est-auto-note" class="explanation">
+          <h4 class="explanation-title">自動估算依據</h4>
+          <ul class="explanation-list">
+            <li><strong>物料體積</strong><span class="formula-line">體積（mm³）＝每袋重量（g）÷ 粉/粒假密度（g/cm³）× 1000</span></li>
+            <li><strong>充填滿度換算</strong><span class="formula-line">f ＝ 輸入百分比 ÷ 100</span></li>
+            <li><strong>需求容積</strong><span class="formula-line">需求容積 ＝ 物料體積 ÷ f</span></li>
+            <li><strong>選袋基準：</strong>A4 長寬比例（297：210）的折封經驗模型；封邊折向袋身內側、無側風琴，非製箱保證。</li>
+          </ul>
+        </section>
+        <section id="p-est-manual-note" class="explanation" hidden>
+          <h4 class="explanation-title">手動估算公式</h4>
+          <ul class="explanation-list">
+            <li><strong>輸入尺寸：</strong>未充填、攤平且含封邊的平面外長／外寬；四面封邊均同寬。</li>
+            <li><strong>扣兩邊封邊</strong><span class="formula-line">有效長 ＝ 平面外長 − 2 × 每邊封邊</span><span class="formula-line">有效寬 ＝ 平面外寬 − 2 × 每邊封邊</span></li>
+            <li><strong>成形長寬各縮減 5%</strong><span class="formula-line">成形長 ＝ 有效長 × 0.95</span><span class="formula-line">成形寬 ＝ 有效寬 × 0.95</span></li>
+            <li><strong>充填滿度換算：</strong>f ＝ 輸入百分比 ÷ 100。</li>
+            <li><strong>中央厚度</strong><span class="formula-line">厚度 ＝ 有效寬 × 0.2 × f</span></li>
+            <li><strong>適用範圍：</strong>不套 A4 比例、不依密度反推；物料體積與容量反推不適用，不宣稱能容納指定重量。</li>
+            <li><strong>估算限制：</strong>成形外包絡不得當成實際容積；未經實袋校正，非製箱保證。</li>
+          </ul>
+        </section>
+        <section id="p-formed-shrink-note" class="explanation">
+          <h4 class="explanation-title">成形尺寸與容量基準</h4>
+          <ul class="explanation-list">
+            <li><strong>符號：</strong>P 為有效平面長、W 為有效平面寬，尺寸單位為 mm。</li>
+            <li><strong>成形長（縮減 5%）</strong><span class="formula-line">成形長 ＝ P × 0.95</span></li>
+            <li><strong>成形寬（縮減 5%）</strong><span class="formula-line">成形寬 ＝ W × 0.95</span></li>
+            <li><strong>中央厚度</strong><span class="formula-line">厚度 ＝ W × 0.2 × f</span></li>
+            <li><strong>內部容量反推基準</strong><span class="formula-line">基準容積 ＝ (P − 0.2W) × (0.8W) × (0.16W)</span></li>
+            <li><strong>兩者不同：</strong>0.16W 僅用於容量反推，不是最終厚度；成形外包絡不得當成物料實際可用容積。</li>
+          </ul>
+        </section>
+        </details>
+        <p id="p-estimation-caution" class="hint">經驗估算，未經實袋校正，非製箱或容量保證。</p>
         <div class="grid" id="p-auto-fields">
           <label>每袋重量（g）<input id="p-massG" type="number" inputmode="numeric" step="any" value="1000"></label>
           <label>粉/粒假密度（g/cm³）<input id="p-bulkDensity" type="number" inputmode="numeric" step="any" value="0.6"></label>
@@ -110,14 +167,39 @@
           <label>每堆件數（袋）<input id="p-unitsPerStack" type="number" inputmode="numeric" step="1" value="5"></label>
           <label>堆數（堆）<select id="p-stackCount"><option value="2">2 堆（1×2）</option><option value="4" selected>4 堆（2×2）</option></select></label>
         </div>
-        <p class="hint">袋身尺寸修正（mm）：每邊追加（長／寬，非負）與單袋厚度修正（非負，只加一次）。</p>
+        <details id="p-correction-disclosure" class="explanation-disclosure">
+          <summary>查看袋身尺寸修正方式</summary>
+          <section id="p-correction-explanation" class="explanation">
+          <h4 class="explanation-title">袋身尺寸修正（mm）</h4>
+          <ul class="explanation-list">
+            <li><strong>每袋裝箱長／寬</strong><span class="formula-line">裝箱長／寬 ＝ 成形長／寬 ＋ 2 × 對應每邊追加</span></li>
+            <li><strong>單袋裝箱厚度</strong><span class="formula-line">裝箱厚度 ＝ 中央厚度 ＋ 單袋厚度修正</span></li>
+            <li>每邊追加與厚度修正皆不可為負；單袋厚度修正只加一次。</li>
+          </ul>
+        </section>
+        </details>
         <div class="grid">
           <label>長向每邊追加（mm）<input id="p-allowanceL" type="number" inputmode="numeric" step="any" value="0"></label>
           <label>寬向每邊追加（mm）<input id="p-allowanceW" type="number" inputmode="numeric" step="any" value="0"></label>
           <label>單袋厚度修正（mm）<input id="p-thicknessCorrection" type="number" inputmode="numeric" step="any" value="0"></label>
         </div>
         <h3>紙箱估算</h3>
-        <p class="hint">以下為可選紙箱參數（mm）；不可留空（空白不會預設為 0）。十字隔板厚度同時套用於長向與寬向；層與層之間不預留間隙（高向間距固定 0 mm），上方空間請用「上方淨高」調整。</p>
+        <p class="hint">紙箱參數以 mm 計；欄位不可留空，上方淨高用於預留空間。</p>
+        <details id="p-carton-disclosure" class="explanation-disclosure">
+          <summary>查看紙箱估算公式</summary>
+          <section id="p-carton-explanation" class="explanation">
+          <h4 class="explanation-title">紙箱估算方式</h4>
+          <ul class="explanation-list">
+            <li><strong>堆疊方式：</strong>2 堆採 1×2；4 堆採 2×2，不提供 1×4／4×1。列數 × 行數 ＝ 堆數。</li>
+            <li><strong>紙箱內長</strong><span class="formula-line">內長 ＝ 每袋裝箱長 × 列數 ＋（列數 − 1）× 十字隔板厚度</span></li>
+            <li><strong>紙箱內寬</strong><span class="formula-line">內寬 ＝ 每袋裝箱寬 × 行數 ＋（行數 − 1）× 十字隔板厚度</span></li>
+            <li><strong>紙箱內高</strong><span class="formula-line">內高 ＝ 單袋裝箱厚度 × 每堆件數 ＋ 天板厚度 ＋ 地板厚度 ＋ 上方淨高</span></li>
+            <li><strong>紙箱外尺寸（各軸）</strong><span class="formula-line">外尺寸 ＝ 對應內尺寸 ＋ 2 × 紙箱厚度</span></li>
+            <li><strong>間距規則：</strong>十字隔板厚度同時套用長、寬方向；袋裝長寬壁距與高向間距固定 0 mm，上方空間由「上方淨高」保留。</li>
+            <li><strong>輸入與帶入：</strong>欄位不可留空（空白不會預設為 0）；估算不提前取整，確認帶入時才將外尺寸各軸向上取整為整數 mm。</li>
+          </ul>
+        </section>
+        </details>
         <div class="grid">
           <label>十字隔板厚度（mm）<input id="p-dividerThickness" type="number" inputmode="numeric" step="any" min="0" value="1" aria-describedby="p-divider-hint"><span id="p-divider-hint" class="hint">無十字隔板時預設 1 mm</span></label>
           <label>天板厚度（mm）<input id="p-topPad" type="number" inputmode="numeric" step="any" value="0"></label>
@@ -152,13 +234,13 @@
     <section class="card" aria-label="輸入">
       <h2>尺寸輸入（毫米）</h2>
       <div class="grid">
-        <label>棧板長<input id="palletL" type="number" inputmode="numeric" step="1" value="1200"></label>
-        <label>棧板寬<input id="palletW" type="number" inputmode="numeric" step="1" value="1000"></label>
-        <label>棧板高<input id="palletH" type="number" inputmode="numeric" step="1" value="150"></label>
-        <label>紙箱長<input id="boxL" type="number" inputmode="numeric" step="1" value="400"></label>
-        <label>紙箱寬<input id="boxW" type="number" inputmode="numeric" step="1" value="500"></label>
-        <label>紙箱高<input id="boxH" type="number" inputmode="numeric" step="1" value="150"></label>
-        <label class="wide">包含棧板的最高總高度<input id="maxTotalH" type="number" inputmode="numeric" step="1" value="1000"></label>
+        <label>棧板長（mm）<input id="palletL" type="number" inputmode="numeric" step="1" value="1200"></label>
+        <label>棧板寬（mm）<input id="palletW" type="number" inputmode="numeric" step="1" value="1000"></label>
+        <label>棧板高（mm）<input id="palletH" type="number" inputmode="numeric" step="1" value="150"></label>
+        <label>紙箱長（mm）<input id="boxL" type="number" inputmode="numeric" step="1" value="400"></label>
+        <label>紙箱寬（mm）<input id="boxW" type="number" inputmode="numeric" step="1" value="500"></label>
+        <label>紙箱高（mm）<input id="boxH" type="number" inputmode="numeric" step="1" value="150"></label>
+        <label class="wide">包含棧板的最高總高度（mm）<input id="maxTotalH" type="number" inputmode="numeric" step="1" value="1000"></label>
       </div>
       <div class="pallet-preset-row">
         <label class="mode-label">棧板尺寸快速選擇
@@ -179,14 +261,39 @@
         </label>
       </div>
       <button id="compute" class="primary" type="button">計算最佳排法</button>
-      <p class="hint">計算限制：單尺寸 ≤100,000 mm・每層 ≤5,000 箱・≤200 層・總箱數 ≤50,000；超過會直接提示而不開始搜尋。計算逾時會自動中止並可重試。</p>
+        <p class="hint">依尺寸估算每層排法、層數與總箱數；超過限制或逾時時會提示。</p>
+        <details id="pallet-explanation-disclosure" class="explanation-disclosure">
+          <summary>查看計算方式與限制</summary>
+          <section id="pallet-explanation" class="explanation">
+          <h3 class="explanation-title">計算方式與上限</h3>
+          <ul class="explanation-list">
+            <li><strong>可堆層數</strong><span class="formula-line">層數 ＝ 向下取整〔（最高總高度 − 棧板高）÷ 紙箱高〕</span>不足一層時為 0。</li>
+            <li><strong>總箱數</strong><span class="formula-line">總箱數 ＝ 每層箱數 × 層數</span></li>
+            <li><strong>含棧板總高</strong><span class="formula-line">總高 ＝ 棧板高 ＋ 層數 × 紙箱高</span></li>
+            <li>單一尺寸上限：100,000 mm。</li>
+            <li>每層最多 5,000 箱；最多 200 層。</li>
+            <li>總箱數上限：50,000 箱。</li>
+            <li>超過上限時直接提示，不開始搜尋；計算逾時自動中止，可調整後重試。</li>
+          </ul>
+        </section>
+        </details>
       <div id="errors" class="errors" hidden></div>
       <div id="message" class="message" hidden></div>
     </section>
 
     <section class="card" id="candidateCard" hidden aria-label="AB 模板候選">
       <h2>五種固定箱數模板候選</h2>
-      <p class="hint">模板為固定箱數排法（不任意變更箱數）；僅當同一棧板內 A 與 B 變體皆無越界且無重疊時才適用。最佳化指五種模板中箱數最多者，非全域最佳證明。</p>
+        <details id="ab-explanation-disclosure" class="explanation-disclosure">
+          <summary>查看 AB 模板適用規則</summary>
+          <section id="ab-explanation" class="explanation">
+          <h3 class="explanation-title">AB 模板適用規則</h3>
+          <ul class="explanation-list">
+            <li>固定提供 4／5／6／7／8 箱五種模板，不任意改變每層箱數。</li>
+            <li>A、B 兩種變體都必須在同一棧板內無越界、無重疊，才列為適用。</li>
+            <li>「最佳」只指五種適用模板中箱數最多者，非全域最佳證明。</li>
+          </ul>
+        </section>
+        </details>
       <ul id="candidateList" class="candidate-list"></ul>
       <label class="mode-label">選擇模板
         <select id="candidateSelect"></select>
@@ -203,9 +310,12 @@
         <div class="stat"><span class="k">平面利用率</span><span class="v" id="statUtil">—</span></div>
         <div class="stat"><span class="k">最優證明</span><span class="v" id="statOpt">—</span></div>
       </div>
-      <p id="solverNote" class="note" hidden></p>
+      <div id="solverNote" class="note" hidden></div>
       <button id="palletToContainer" class="primary" type="button" hidden disabled>轉往「裝櫃模擬」</button>
-      <p class="hint">轉往裝櫃模擬會沿用目前棧板排法；貨櫃總箱數需另行輸入，已填寫的櫃型與數值會保留。</p>
+      <ul class="explanation-list">
+        <li>轉往裝櫃模擬會沿用目前棧板排法。</li>
+        <li>貨櫃總箱數需另行輸入；已填寫的櫃型與數值會保留。</li>
+      </ul>
     </section>
 
     <section class="card" id="viewerCard" hidden aria-label="3D 檢視">
@@ -241,12 +351,47 @@
     <div id="page-container" class="page-wrapper" hidden>
     <section class="card" id="containerHost" aria-label="裝櫃模擬">
       <h2>裝櫃模擬</h2>
-      <p class="hint">流程：先算棧板 → 按「轉往『裝櫃模擬』」→ 輸入貨櫃總箱數 → 計算裝櫃。貨櫃總箱數為獨立輸入，不會沿用上方棧板結果的總箱數；主尺寸或模式變更後須重新計算。</p>
-      <p class="hint container-links">櫃型預設值可自行修改（改後會顯示「已自訂」，可按「恢復所選櫃型預設值」）。規格來源（Hapag-Lloyd，可點擊查核）：
-        <a href="https://www.hapag-lloyd.com/en/services-information/cargo-fleet/container/20-standard.html" target="_blank" rel="noopener noreferrer">20' 標準櫃</a>・
-        <a href="https://www.hapag-lloyd.com/en/services-information/cargo-fleet/container/40-standard.html" target="_blank" rel="noopener noreferrer">40' 標準櫃</a>・
-        <a href="https://www.hapag-lloyd.com/en/services-information/cargo-fleet/container/40-standard-high-cube.html" target="_blank" rel="noopener noreferrer">40' Standard High Cube</a>
-      </p>
+      <div id="containerQuantityHost"></div>
+        <p id="container-workflow-brief" class="hint">填總箱數 → 確認櫃型與尺寸 → 計算</p>
+        <details id="container-workflow-disclosure" class="explanation-disclosure">
+          <summary>查看完整使用流程</summary>
+        <section id="container-explanation" class="explanation">
+          <h3 class="explanation-title">使用流程</h3>
+          <ol class="explanation-list">
+            <li>先在「紙箱優化堆疊」計算有效排法。</li>
+            <li>按「轉往『裝櫃模擬』」，沿用目前選中的棧板排法。</li>
+            <li>設定櫃型與實際內尺寸，另外輸入本次貨櫃需求總箱數。</li>
+            <li>按「計算」，查看可裝板數、未裝箱數與 3D 配置。</li>
+            <li><strong>總箱數為獨立輸入：</strong>不沿用單一棧板的總箱數；轉頁不覆寫已填設定，也不會自動計算。</li>
+            <li><strong>資料失效：</strong>紙箱／棧板主尺寸或模式變更後，必須重新計算。</li>
+          </ol>
+        </section>
+        </details>
+        <p id="container-safety-note" class="hint">靜態幾何估算，不代表叉車搬運、裝卸順序或海運安全認證。</p>
+        <details id="container-limits-disclosure" class="explanation-disclosure">
+          <summary>查看裝櫃計算依據與限制</summary>
+          <section id="container-limits" class="explanation">
+          <h3 class="explanation-title">裝櫃計算依據與限制</h3>
+          <ul class="explanation-list">
+            <li><strong>每板層數：</strong>依最高總高度、貨櫃內高與門高限制重新計算，不直接沿用棧板頁層數。</li>
+            <li><strong>底面排法：</strong>比較同向、分帶與可用的交錯轉向候選；選擇候選中可容納板數最多者，非全域最佳保證。</li>
+            <li><strong>整板與尾板：</strong>先配置整板；整板全放入且還有位置時，才配置尾板，不重新拆箱。</li>
+            <li><strong>通過檢查：</strong>檢查內長、內寬、內高、門寬、門高、板間間距與是否允許轉向。</li>
+            <li><strong>適用範圍：</strong>靜態幾何可放入，不代表叉車轉彎或裝卸順序可行，也不是海運安全認證。</li>
+          </ul>
+        </section>
+        </details>
+        <details id="container-preset-disclosure" class="explanation-disclosure">
+          <summary>查看櫃型預設與規格來源</summary>
+          <section id="container-preset-explanation" class="explanation">
+          <h3 class="explanation-title">櫃型預設與規格來源</h3>
+          <ul class="explanation-list">
+            <li>預設尺寸可自行修改；修改後顯示「已自訂」。需要時可按「恢復所選櫃型預設值」。</li>
+            <li>參考 Hapag-Lloyd 官方範例，仍請以實際貨櫃／船公司資料為準。</li>
+            <li><a href="https://www.hapag-lloyd.com/en/services-information/cargo-fleet/container/20-standard.html" target="_blank" rel="noopener noreferrer">20 呎標準櫃</a>、<a href="https://www.hapag-lloyd.com/en/services-information/cargo-fleet/container/40-standard.html" target="_blank" rel="noopener noreferrer">40 呎標準櫃</a>、<a href="https://www.hapag-lloyd.com/en/services-information/cargo-fleet/container/40-standard-high-cube.html" target="_blank" rel="noopener noreferrer">40 呎高櫃</a></li>
+          </ul>
+        </section>
+        </details>
     </section>
     <section class="card" aria-label="貨櫃三維配置">
       <h2>貨櫃 3D 配置</h2>
@@ -256,7 +401,10 @@
   </main>
 
   <footer class="foot">
-    直立逐層模型：每層同一布局、僅水平 90° 旋轉、不懸空、不越界、不重疊。非全域最優證明、不含抗壓計算。
+    <ul class="explanation-list">
+      <li>直立逐層模型：每層同一布局、僅水平 90° 旋轉、不懸空、不越界、不重疊。</li>
+      <li>非全域最優證明，不含抗壓計算。</li>
+    </ul>
   </footer>
 
 </body>
